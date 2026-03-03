@@ -1,5 +1,8 @@
+import sampling
+
 def main():
-    print("Hello from kyber-py!")
+    result = sampling.sample_poly_shake(bytes(32) + bytes([0]) + bytes([0]))
+    print(result.coeff)
 
 
 if __name__ == "__main__":
