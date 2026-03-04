@@ -9,17 +9,24 @@ class poly:
 
 
     def poly_add(self, poly_b):
+        result = []
         for i in range(self.n):
-            self.coeff[i] = add(self.coeff[i], poly_b.coeff[i])
+            tmp = add(self.coeff[i], poly_b.coeff[i])
+            result.append(tmp)
+        return poly(result)
 
 
     def poly_sub(self, poly_b):
+        result = []
         for i in range(self.n):
-            self.coeff[i] = sub(self.coeff[i], poly_b.coeff[i])
+            tmp = sub(self.coeff[i], poly_b.coeff[i])
+            result.append(tmp)
+        return poly(result)
 
     
     def poly_mul(self, poly_b):
         """multiply using negacyclic convolution -> NTT later"""
+        result = []
         tmp = list(self.coeff) # copy coeffs to avoid overwriting while reading
         for row in range(self.n):
             c = 0
@@ -29,7 +36,8 @@ class poly:
                 if col > row:
                     v = -v # negate when index wrapped around (x^n = -1)
                 c += v
-            self.coeff[row] = reduce(c)
+            result.append(reduce(c))
+        return poly(result)
         
         
     def poly_reduce(self):
