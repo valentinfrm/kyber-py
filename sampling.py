@@ -46,7 +46,6 @@ def sample_poly_shake(byte_input):
     coeff = []
 
     while i < 256:
-        print(di, len(byte_digest))
         C = byte_digest[di:di+3] # 3 bytes -> 24 bits -> 2 * 12 (12 bits needed for max 3329)
         d1 = C[0] + 256 * (C[1] % 16)
         d2 = (C[1] >> 4) + 16 * C[2]
@@ -62,7 +61,6 @@ def sample_poly_shake(byte_input):
         
         di += 3
 
-    print(i)
     p = polynomial.poly(coeff)
     p.poly_reduce()
     return p
