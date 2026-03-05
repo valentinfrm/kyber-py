@@ -28,7 +28,7 @@ def byte_encode(d, int_input):
         int_input (list): 256 integers 
     
     Returns:
-        list: 32 * d bytes
+        bytes: 32 * d bytes
     """
     bits = []
     for i in range (params.n):
@@ -37,7 +37,7 @@ def byte_encode(d, int_input):
             bits.append(value % 2) # always LSB
             value = value >> 1
 
-    return bits_to_bytes(bits)
+    return bytes(bits_to_bytes(bits))
 
 def byte_decode(d, byte_input):
     """
