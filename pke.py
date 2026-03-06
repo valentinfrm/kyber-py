@@ -1,6 +1,5 @@
 from hash import G,PRF
 from polynomial import poly
-import os
 import params
 import sampling
 import auxiliary
@@ -55,5 +54,3 @@ def pke_keygen(d):
     dk = auxiliary.byte_encode(12, s_coeff)
 
     return (ek, dk)
-    
-    
