@@ -7,6 +7,7 @@ requires-python = ">=3.14"
 dependencies = [
     "kyber-py>=1.2.0",
     "numpy>=2.4.2",
+    "pycryptodome>=3.23.0",
     "pytest>=9.0.2",
 ]
 

@@ -2,6 +2,7 @@ import params
 import field
 import hashlib
 import polynomial
+from Crypto.Hash import SHAKE128
 from auxiliary import *
 
 def sample_poly_cbd(byte_input, eta):
@@ -34,19 +35,14 @@ def expand(rho):
 
 
 def sample_poly_shake(byte_input):
-    # problem -> no iterative squeezing
-    # solution -> large enough pre calculated digest
-    # around (4096-3329)/4096 = 19% rejected -> on average 316 coeff needed -> 840 Bytes = 5*Keccak
-    shake = hashlib.shake_128()
-    shake.update(byte_input)
-    byte_digest = shake.digest(5000)
+    shake = SHAKE128.new(byte_input)
     
     di = 0
     i = 0
     coeff = []
 
     while i < 256:
-        C = byte_digest[di:di+3] # 3 bytes -> 24 bits -> 2 * 12 (12 bits needed for max 3329)
+        C = shake.read(3) # 3 bytes -> 24 bits -> 2 * 12 (12 bits needed for max 3329)
         d1 = C[0] + 256 * (C[1] % 16)
         d2 = (C[1] >> 4) + 16 * C[2]
 
