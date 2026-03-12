@@ -3,6 +3,7 @@ from sampling import sample_poly_cbd, expand
 from polynomial import poly
 import params
 import auxiliary
+from ntt import NTT, iNTT
 
 #ek, dk PKE keys, not KEM encaps/decaps keys
 
@@ -33,29 +34,39 @@ def keygen(d):
         e.append(sample_poly_cbd(PRF(params.eta1, sigma, N), params.eta1))
         N += 1
 
+    # transform s into NTT
+    s_hat = []
+    for p in s:
+        s_hat.append(poly(NTT(p.coeff)))
+
+    # transform e into NTT
+    e_hat = []
+    for p in e:
+        e_hat.append(poly(NTT(p.coeff)))
+
     # A * s
     As = []
     for row in range(params.k):
         p = poly([0] * params.n)
         for col in range(params.k):
-            tmp = A[row][col] * s[col]
+            tmp = A[row][col] * s_hat[col]
             p += tmp
         As.append(p)
 
     # + e
-    t = []
+    t_hat = []
     for row in range(params.k):
-        t.append(As[row] + e[row])
+        t_hat.append(As[row] + e_hat[row])
 
     # takes all coeffs c from poly p for all polynomials in t/s
-    t_coeff = [c for p in t for c in p.coeff]
-    s_coeff = [c for p in s for c in p.coeff]
+    t_hat_coeff = [c for p in t_hat for c in p.coeff]
+    s_hat_coeff = [c for p in s_hat for c in p.coeff]
 
     # encode keys
-    ek = auxiliary.byte_encode(t_coeff, 12) + rho
-    dk = auxiliary.byte_encode(s_coeff, 12)
+    ek = auxiliary.byte_encode(t_hat_coeff, 12) + rho
+    dk = auxiliary.byte_encode(s_hat_coeff, 12)
 
-    return (ek, dk)
+    return ek, dk
 
 def encrypt(ek, m, r):
     """
