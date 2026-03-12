@@ -106,13 +106,18 @@ def encrypt(ek, m, r):
     # sample e2 polynomial
     e2 = sample_poly_cbd(PRF(params.eta2, r, N), params.eta2)
 
+    # transform y to NTT realm
+    y_hat = []
+    for p in y:
+        y_hat.append(poly(NTT(p.coeff)))
+
     # u = (A_t * y) + e1
     u = [] # vector of polys length k
     for row in range(params.k):
         p = poly([0] * params.n) # poly with only 0s as coeff
         for col in range(params.k):
-            p += A_T[row][col] * y[col]
-        p += e1[row]
+            p += A_T[row][col] * y_hat[col]
+        p = poly(iNTT(p.coeff)) + e1[row]
         u.append(p)
 
     mu = poly(auxiliary.decompress_poly(auxiliary.byte_decode(m, 1), 1))
@@ -121,8 +126,7 @@ def encrypt(ek, m, r):
     v = poly([0] * params.n) # just one poly because of dot product
     for i in range(params.k):
         v += (t_polys[i] * y[i])
-    v += e2
-    v += mu
+    v = poly(iNTT(v.coeff)) + e2 + mu
         
     c1 = b""
     for i in range(params.k):
@@ -163,9 +167,9 @@ def decrypt(dk, c):
     # s^T * u
     sT = poly([0] * params.n)
     for i in range(params.k):
-        sT += (s[i] * u[i])
+        sT += (s[i] * poly(NTT(u[i].coeff))) # s already in NTT from dk
     
-    w = v - sT
+    w = v - poly(iNTT(sT.coeff))
 
     m = auxiliary.byte_encode(auxiliary.compress_poly(w.coeff, 1), 1)
 
