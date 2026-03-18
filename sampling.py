@@ -1,5 +1,4 @@
 import params
-import field
 import polynomial
 from Crypto.Hash import SHAKE128
 from auxiliary import *
@@ -14,15 +13,21 @@ def sample_poly_cbd(byte_input, eta):
     Returns:
         list: 256 coefficients in Zq
     """
-    b = bytes_to_bits(byte_input)
-    coeff = []
 
+    int_input = int.from_bytes(byte_input, "little")
+    coeffs = [0] * 256
+
+    m1 = (1 << eta) - 1 # for eta = 2: 11b -> two bits
+    m2 = (1 << 2 * eta) - 1 # total amount needed
     for i in range(256):
-        x = sum((b[2 * i * eta + j]) for j in range(eta))
-        y = sum((b[2 * i * eta + eta + j]) for j in range(eta))
-        coeff.append(field.reduce(x - y))
+        tmp = int_input & m2
+        x = (tmp & m1).bit_count() # bitcount == manual sum with loop
+        y = ((tmp >> eta) & m1).bit_count()
+        coeffs[i] = (x - y) % params.q
 
-    return polynomial.poly(coeff)
+        int_input >>= 2 * eta # cuts used ones off
+
+    return polynomial.poly(coeffs)
 
 def expand(rho):
     """
