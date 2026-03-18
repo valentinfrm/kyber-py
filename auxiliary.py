@@ -49,13 +49,17 @@ def byte_decode(byte_input, d):
     Returns:
         list: integers
     """
-    bits = bytes_to_bits(byte_input)
+    n = len(byte_input) * 8 // d # amount of ints to produce
+    int_input = int.from_bytes(byte_input, "little") # one long int
     
-    integers = []
-    for i in range(0, len(bits), d): # 0 -> len(bits), d = step size
-        int_value = sum(bits[i + j] << j for j in range(d))
-        integers.append(int_value)
+    mask = (1 << d) - 1
+    integers = [0] * n
     
+    for i in range(n):
+        value = int_input & mask # int & bit = int
+        integers[i] = value
+        int_input >>= d
+        
     return integers
 
 def transpose_matrix(A):
