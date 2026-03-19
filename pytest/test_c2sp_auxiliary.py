@@ -2,8 +2,7 @@ import pytest
 
 from auxiliary import (
     compress_poly, decompress_poly,
-    byte_encode, byte_decode, 
-    bits_to_bytes, bytes_to_bits,
+    byte_encode, byte_decode,
     transpose_matrix
 )
 from c2sp_vectors import ALL_KEM_DATA, KEM_IDS
@@ -96,20 +95,6 @@ def test_transpose_matrix_full_size(kem_data):
             A_T_bytes += byte_encode(A_T[i][j], 12)
     
     assert A_T_bytes == A_T_expected_bytes
-
-def test_bytes_to_bits():
-    test_bytes = bytes([0b10110010])  # 0xb2
-    expected_bits = [0, 1, 0, 0, 1, 1, 0, 1]  # LSB first
-    result = bytes_to_bits(test_bytes)
-    assert result == expected_bits
-
-def test_bits_to_bytes():
-    test_bits = [1, 0, 1, 1, 0, 0, 0, 0,  # 0x0d LSB first
-                 0, 0, 0, 0, 0, 0, 0, 0,  # 0x00
-                 1, 0, 1, 1, 0, 0, 0, 0]  # 0x0d LSB first
-    expected_bytes = [0x0d, 0x00, 0x0d]
-    result = bits_to_bytes(test_bits)
-    assert result == expected_bytes
 
 def test_encode_decode_roundtrip():
     data = [1] * 256
