@@ -8,17 +8,21 @@ class poly:
         self.n = len(self.coeff)
 
     def __add__(self, poly_b):
-        result = []
+        if self.n != len(poly_b.coeff):
+            raise ValueError("Only polynomials of the same degree can be added")
+        
+        result = [0] * self.n
         for i in range(self.n):
-            tmp = (self.coeff[i] + poly_b.coeff[i]) % params.q
-            result.append(tmp)
+            result[i] = (self.coeff[i] + poly_b.coeff[i]) % params.q
         return poly(result)
 
     def __sub__(self, poly_b):
-        result = []
+        if self.n != len(poly_b.coeff):
+            raise ValueError("Only polynomials of the same degree can be subtracted")
+        
+        result = [0] * self.n
         for i in range(self.n):
-            tmp = (self.coeff[i] - poly_b.coeff[i]) % params.q
-            result.append(tmp)
+            result[i] = (self.coeff[i] - poly_b.coeff[i]) % params.q
         return poly(result)
 
     def __mul__(self, poly_b):
